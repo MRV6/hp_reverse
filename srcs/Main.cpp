@@ -1,11 +1,14 @@
 #include <windows.h>
 #include <iostream>
+#include <ctime>
 
 #include "../includes/Debug.h"
 #include "../includes/Studs.h"
 #include "../includes/Memory.h"
-#include "../includes/Player.h"
+#include "../includes/Entity.h"
 #include "../includes/NoClip.h"
+
+clock_t lastEntitiesDump = 0;
 
 static void InitModules()
 {
@@ -17,14 +20,30 @@ static void LoopModules()
 {
     Studs::Loop();
     NoClip::Loop();
+
+    // Dump entities
+    float timeDiffSec = (float)(clock() - lastEntitiesDump) / CLOCKS_PER_SEC;
+
+    if (timeDiffSec >= 3)
+    {
+        Entity::DumpAll();
+        lastEntitiesDump = clock();
+    }
 }
 
 static void MainThread(HMODULE hModule)
 {
     FILE* f;
+
     AllocConsole();
     freopen_s(&f, "CONOUT$", "w", stdout);
     SetConsoleTitleA("HP Reverse");
+
+    // Enable ANSI
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hConsole, &mode);
+    SetConsoleMode(hConsole, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 
     Memory::Init();
     InitModules();

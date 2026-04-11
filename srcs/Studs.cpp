@@ -10,7 +10,7 @@ void Studs::Init()
 
 	Debug::Print("Studs initialized");
 
-	std::cout << "Press F3 to get studs" << std::endl;
+	std::cout << "Press F3 to get studs" << std::endl << std::endl;
 }
 
 void Studs::Add(unsigned int amount)

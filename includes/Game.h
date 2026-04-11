@@ -1,13 +1,13 @@
 #pragma once
 
-#include "./Player.h"
+#include "./Entity.h"
 
 class Game
 {
 private:
-	static Player localPlayer;
-	static bool localPlayerCached;
+	static Entity localEntity;
+	static bool localEntityCached;
 
 public:
-	static Player& GetLocalPlayer();
+	static Entity& GetLocalEntity();
 };

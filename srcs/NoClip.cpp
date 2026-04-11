@@ -13,7 +13,7 @@ float NoClip::speed = 5.0f;
 
 void NoClip::Init()
 {
-	std::cout << "Press F4 to toggle No Clip" << std::endl;
+	std::cout << "Press F4 to toggle No Clip" << std::endl << std::endl;
 }
 
 void NoClip::Loop()
@@ -25,7 +25,7 @@ void NoClip::Loop()
 
 	if (NoClip::active)
 	{
-		Player localPlayer = Game::GetLocalPlayer();
+		Entity localEntity = Game::GetLocalEntity();
 		Vector3 velocity(0.0f, 0.0f, 0.0f);
 
 		// Left/right
@@ -61,7 +61,7 @@ void NoClip::Loop()
 			velocity.z = -NoClip::speed;
 		}
 
-		localPlayer.SetVelocity(velocity);
+		localEntity.SetVelocity(velocity);
 	}
 }
 

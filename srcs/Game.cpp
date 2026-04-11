@@ -1,21 +1,21 @@
 #include "../includes/Game.h"
 #include "../includes/Memory.h"
 
-Player Game::localPlayer = 0;
-bool Game::localPlayerCached = false;
+Entity Game::localEntity = 0;
+bool Game::localEntityCached = false;
 
-Player& Game::GetLocalPlayer()
+Entity& Game::GetLocalEntity()
 {
-	if (Game::localPlayerCached)
+	if (Game::localEntityCached)
 	{
-		return Game::localPlayer;
+		return Game::localEntity;
 	}
 
-	uintptr_t localPlayerPtrAddress = Memory::GetPointerAddress(0x01426D50, { 0x0 });
-	Player localPlayer = Player(*(uintptr_t*)localPlayerPtrAddress);
+	uintptr_t localEntityPtrAddr = Memory::GetPointerAddress(0x01426D50, { 0x0 });
+	Entity localEntity = Entity(*(uintptr_t*)localEntityPtrAddr);
 
-	Game::localPlayer = localPlayer;
-	Game::localPlayerCached = true;
+	Game::localEntity = localEntity;
+	Game::localEntityCached = true;
 
-	return localPlayer;
+	return localEntity;
 }

@@ -9,6 +9,6 @@ Vector3::Vector3(float x, float y, float z)
 
 std::ostream& operator<<(std::ostream& os, const Vector3& vec)
 {
-	os << "x: " << vec.x << " | y: " << vec.y << " | z: " << vec.z;
+	os << "X: " << vec.x << " | Y: " << vec.y << " | Z: " << vec.z;
 	return os;
 }
