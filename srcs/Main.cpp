@@ -7,58 +7,33 @@
 #include "../includes/Memory.h"
 #include "../includes/Entity.h"
 #include "../includes/NoClip.h"
-
-clock_t lastEntitiesDump = 0;
+#include "../includes/Interface.h"
+#include "../includes/Menu.h"
 
 static void InitModules()
 {
+    Memory::Init();
     Studs::Init();
     NoClip::Init();
 }
 
 static void LoopModules()
 {
-    Studs::Loop();
     NoClip::Loop();
-
-    // Dump entities
-    float timeDiffSec = (float)(clock() - lastEntitiesDump) / CLOCKS_PER_SEC;
-
-    if (timeDiffSec >= 3)
-    {
-        Entity::DumpAll();
-        lastEntitiesDump = clock();
-    }
+    Menu::Loop();
 }
 
 static void MainThread(HMODULE hModule)
 {
-    FILE* f;
-
-    AllocConsole();
-    freopen_s(&f, "CONOUT$", "w", stdout);
-    SetConsoleTitleA("HP Reverse");
-
-    // Enable ANSI
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD mode;
-    GetConsoleMode(hConsole, &mode);
-    SetConsoleMode(hConsole, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-
-    Memory::Init();
+    InitInterface();
     InitModules();
-
-    Debug::Print("HP reverse loaded !");
-
-    std::cout << std::endl << "Press END to close." << std::endl;
 
     while (!GetAsyncKeyState(VK_END) & 0x1)
     {
         LoopModules();
     }
 
-    if (f != 0) fclose(f);
-    FreeConsole();
+    ShutdownInterface();
 
     MessageBeep(MB_OK);
     FreeLibraryAndExitThread(hModule, 0);
@@ -68,16 +43,20 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 {
     switch (dwReason)
     {
-    case DLL_PROCESS_ATTACH:
-    {
-        DisableThreadLibraryCalls(hModule);
-        HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)MainThread, hModule, NULL, NULL);
-
-        if (hThread != 0)
+        case DLL_PROCESS_ATTACH:
         {
-            CloseHandle(hThread);
+            DisableThreadLibraryCalls(hModule);
+            HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)MainThread, hModule, NULL, NULL);
+
+            if (hThread != 0)
+            {
+                CloseHandle(hThread);
+            }
+
+            break;
         }
-    }
+        case DLL_PROCESS_DETACH:
+            break;
     }
 
     return TRUE;

@@ -9,8 +9,6 @@ void Studs::Init()
 	Studs::address = Memory::GetPointerAddress(0x01419430, { 0x0 });
 
 	Debug::Print("Studs initialized");
-
-	std::cout << "Press F3 to get studs" << std::endl << std::endl;
 }
 
 void Studs::Add(unsigned int amount)
@@ -31,12 +29,4 @@ void Studs::Set(unsigned int amount)
 unsigned int Studs::Get()
 {
 	return *(unsigned int*)Studs::address;
-}
-
-void Studs::Loop()
-{
-	if (GetAsyncKeyState(VK_F3) & 0x1)
-	{
-		Studs::Set(500000000);
-	}
 }

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "./Vector3.h"
+#include "../vendor/imgui/imgui.h"
 
 #define ENTITY_MEM_SIZE 0x1E80
 
@@ -63,7 +64,7 @@ public:
 	uintptr_t GetAddress() const;
 
 	static std::vector<Entity> GetAll();
-	static void DumpAll();
+	static void RenderMenu();
 };
 
 std::ostream& operator<<(std::ostream& os, const Entity& ent);

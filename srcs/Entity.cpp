@@ -1,6 +1,7 @@
 #include "../includes/Entity.h"
 #include "../includes/Memory.h"
 #include "../includes/Debug.h"
+#include "../includes/Game.h"
 
 Entity::Entity(uintptr_t address)
 {
@@ -115,14 +116,30 @@ std::vector<Entity> Entity::GetAll()
 	return list;
 }
 
-void Entity::DumpAll()
+void Entity::RenderMenu()
 {
-	std::vector<Entity> entityList = Entity::GetAll();
-
-	std::cout << std::endl << "========== Entities count : " << GREEN << entityList.size() << RESET << " ==========" << std::endl << std::endl;
-
-	for (int i = 0; i < entityList.size(); i++)
+	if (ImGui::CollapsingHeader("Entities"))
 	{
-		std::cout << entityList[i] << std::endl;
+		std::vector<Entity> entities = Entity::GetAll();
+
+		for (int i = 0; i < entities.size(); i++)
+		{
+			ImGui::PushID(i);
+
+			Entity currentEntity = entities[i];
+			std::string modelName = currentEntity.GetModelName();
+
+			if (ImGui::TreeNode(modelName.c_str()))
+			{
+				ImGui::Text("Address: %x", currentEntity.GetAddress());
+				ImGui::Text("Health: %i", currentEntity.GetHealth());
+				ImGui::Text("Coords: %s", currentEntity.GetCoords().ToString().c_str());
+				ImGui::Text("Velocity: %s", currentEntity.GetVelocity().ToString().c_str());
+
+				ImGui::TreePop();
+			}
+
+			ImGui::PopID();
+		}
 	}
 }

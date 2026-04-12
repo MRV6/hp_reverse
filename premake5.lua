@@ -10,9 +10,11 @@ project "hp_reverse"
     targetname "hp_reverse"
     targetextension ".dll"
 
-    includedirs { "includes" }
+    includedirs { "includes", "vendor/**" }
 
-    files { "includes/**.h", "srcs/**.cpp" }
+    files { "includes/**.h", "srcs/**.cpp", "vendor/**/**.h", "vendor/**/**.cpp", "vendor/**/**.c" }
+
+    links { "d3d12", "dxgi", "d3dcompiler" }
 
     filter "configurations:Debug"
         defines { "DEBUG" }

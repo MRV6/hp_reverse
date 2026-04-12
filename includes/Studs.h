@@ -9,7 +9,6 @@ private:
 
 public:
 	static void Init();
-	static void Loop();
 
 	static void Add(unsigned int amount);
 	static void Remove(unsigned int amount);

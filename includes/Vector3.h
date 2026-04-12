@@ -10,6 +10,8 @@ public:
 	float x;
 	float y;
 	float z;
+
+	std::string ToString() const;
 };
 
 std::ostream& operator<<(std::ostream& os, const Vector3& vec);

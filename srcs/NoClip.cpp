@@ -13,7 +13,7 @@ float NoClip::speed = 5.0f;
 
 void NoClip::Init()
 {
-	std::cout << "Press F4 to toggle No Clip" << std::endl << std::endl;
+
 }
 
 void NoClip::Loop()
@@ -68,6 +68,4 @@ void NoClip::Loop()
 void NoClip::Toggle()
 {
 	NoClip::active = !NoClip::active;
-
-	std::cout << (NoClip::active ? "NoClip activated" : "NoClip deactivated") << std::endl;
 }
