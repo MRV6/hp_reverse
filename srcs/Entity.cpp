@@ -70,13 +70,23 @@ uintptr_t Entity::GetAddress() const
 	return (uintptr_t)this->ptr;
 }
 
+unsigned int Entity::GetHealth() const
+{
+	return this->ptr->health;
+}
+
+void Entity::SetHealth(unsigned int health)
+{
+	this->ptr->health = health;
+}
+
 std::ostream& operator<<(std::ostream& os, const Entity& ent)
 {
 	os << "[" << GREEN << std::hex << ent.GetAddress() << std::dec << RESET << "] ";
 	os << "Model name: " << YELLOW << ent.GetModelName() << RESET;
 	os << " | Coords: " << YELLOW << ent.GetCoords() << RESET;
 	os << " | Velocity: " << YELLOW << ent.GetVelocity() << RESET;
-	os << std::endl;
+	os << " | Health: " << YELLOW << ent.GetHealth() << RESET;
 	return os;
 }
 

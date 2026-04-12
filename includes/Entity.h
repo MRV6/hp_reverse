@@ -29,7 +29,9 @@ public:
 	void* someEntity; //0x1238
 	char pad_1240[1840]; //0x1240
 	float zRelated; //0x1970
-	char pad_1974[492]; //0x1974
+	char pad_1974[203]; //0x1974
+	uint8_t health; //0x1A3F
+	char pad_1A41[287]; //0x1A41
 	void* minifigPtr; //0x1B60
 	float yVelocity; //0x1B68
 	float zVelocity; //0x1B6C
@@ -54,6 +56,9 @@ public:
 	Vector3 GetVelocity() const;
 
 	std::string GetModelName() const;
+
+	unsigned int GetHealth() const;
+	void SetHealth(unsigned int health);
 
 	uintptr_t GetAddress() const;
 
