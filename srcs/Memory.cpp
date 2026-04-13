@@ -25,3 +25,8 @@ uintptr_t Memory::GetPointerAddress(uintptr_t baseOffset, const std::vector<uint
 
 	return address;
 }
+
+uintptr_t Memory::GetBaseAddress()
+{
+	return Memory::baseAddress;
+}

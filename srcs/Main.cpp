@@ -9,12 +9,14 @@
 #include "../includes/NoClip.h"
 #include "../includes/Interface.h"
 #include "../includes/Menu.h"
+#include "../includes/Model.h"
 
 static void InitModules()
 {
     Memory::Init();
     Studs::Init();
     NoClip::Init();
+    Model::Init();
 }
 
 static void LoopModules()

@@ -12,4 +12,5 @@ private:
 public:
 	static void Init();
 	static uintptr_t GetPointerAddress(uintptr_t baseOffset, const std::vector<uintptr_t> &offsets);
+	static uintptr_t GetBaseAddress();
 };
