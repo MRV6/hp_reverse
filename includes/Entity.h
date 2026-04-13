@@ -20,9 +20,13 @@ public:
 	float yAxis; //0x0044
 	float zAxis; //0x0048
 	float xAxis; //0x004C
-	char pad_0050[116]; //0x0050
-	float timeSinceLastAnim; //0x00C4
-	char pad_00C8[288]; //0x00C8
+	float yAxis3; //0x0050
+	float zAxis3; //0x0054
+	float xAxis3; //0x0058
+	float yAxis4; //0x005C
+	float xAxis4; //0x0060
+	float zAxis4; //0x0064
+	char pad_0068[384]; //0x0068
 	void* focusedEntity; //0x01E8
 	char pad_01F0[976]; //0x01F0
 	void* currentTerrain; //0x05C0
@@ -30,17 +34,23 @@ public:
 	void* someEntity; //0x1238
 	char pad_1240[1840]; //0x1240
 	float zRelated; //0x1970
-	char pad_1974[203]; //0x1974
+	char pad_1974[166]; //0x1974
+	uint16_t modelIndex; //0x1A1A
+	char pad_1A1C[35]; //0x1A1C
 	uint8_t health; //0x1A3F
-	char pad_1A41[287]; //0x1A41
+	char pad_1A40[288]; //0x1A40
 	void* minifigPtr; //0x1B60
 	float yVelocity; //0x1B68
 	float zVelocity; //0x1B6C
 	float xVelocity; //0x1B70
-	char pad_1B74[52]; //0x1B74
+	char pad_1B74[24]; //0x1B74
+	float yAxis2; //0x1B8C
+	float zAxis2; //0x1B90
+	float xAxis2; //0x1B94
+	char pad_1B98[16]; //0x1B98
 	float zRelated2; //0x1BA8
-	char pad_1BAC[9428]; //0x1BAC
-}; //Size: 0x4080
+	char pad_1BAC[724]; //0x1BAC
+}; //Size: 0x1E80
 
 class Entity
 {
@@ -62,6 +72,8 @@ public:
 	void SetHealth(unsigned int health);
 
 	uintptr_t GetAddress() const;
+
+	unsigned int GetModel() const;
 
 	static std::vector<Entity> GetAll();
 	static void RenderMenu();

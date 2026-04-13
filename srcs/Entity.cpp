@@ -81,6 +81,11 @@ void Entity::SetHealth(unsigned int health)
 	this->ptr->health = health;
 }
 
+unsigned int Entity::GetModel() const
+{
+	return this->ptr->modelIndex;
+}
+
 std::ostream& operator<<(std::ostream& os, const Entity& ent)
 {
 	os << "[" << GREEN << std::hex << ent.GetAddress() << std::dec << RESET << "] ";
@@ -121,8 +126,11 @@ void Entity::RenderMenu()
 	if (ImGui::CollapsingHeader("Entities"))
 	{
 		std::vector<Entity> entities = Entity::GetAll();
+		int entitiesCount = entities.size();
 
-		for (int i = 0; i < entities.size(); i++)
+		ImGui::Text("Count: %i", entitiesCount);
+
+		for (int i = 0; i < entitiesCount; i++)
 		{
 			ImGui::PushID(i);
 
@@ -135,6 +143,7 @@ void Entity::RenderMenu()
 				ImGui::Text("Health: %i", currentEntity.GetHealth());
 				ImGui::Text("Coords: %s", currentEntity.GetCoords().ToString().c_str());
 				ImGui::Text("Velocity: %s", currentEntity.GetVelocity().ToString().c_str());
+				ImGui::Text("Model index: %d", currentEntity.GetModel());
 
 				ImGui::TreePop();
 			}
