@@ -2,8 +2,9 @@
 
 #include "../includes/Entity.h"
 #include "../includes/Memory.h"
-#include "../includes/Debug.h"
 #include "../includes/Game.h"
+#include "../includes/Matrix.h"
+#include "../includes/Logs.h"
 
 Entity::Entity(uintptr_t address)
 {
@@ -34,9 +35,10 @@ void Entity::SetCoords(Vector3 coords)
 		return;
 	}
 
-	this->ptr->xAxis = coords.x;
-	this->ptr->yAxis = coords.y;
-	this->ptr->zAxis = coords.z;
+	_teleportEntity teleportEntity = (_teleportEntity)(Memory::GetBaseAddress() + 0x33CC0);
+
+	float newCoords[3] = { coords.y, coords.z, coords.x };
+	teleportEntity(this->ptr, &newCoords[0]);
 }
 
 Vector3 Entity::GetVelocity() const
@@ -103,14 +105,18 @@ void Entity::ResetHealth()
 	this->SetHealth(this->GetMaxHealth());
 }
 
-std::ostream& operator<<(std::ostream& os, const Entity& ent)
+Vector3 Entity::GetForwardVector() const
 {
-	os << "[" << GREEN << std::hex << ent.GetAddress() << std::dec << RESET << "] ";
-	os << "Model name: " << YELLOW << ent.GetModelName() << RESET;
-	os << " | Coords: " << YELLOW << ent.GetCoords() << RESET;
-	os << " | Velocity: " << YELLOW << ent.GetVelocity() << RESET;
-	os << " | Health: " << YELLOW << ent.GetHealth() << RESET;
-	return os;
+	struct Matrix4x4 mat = this->ptr->transformMatrix;
+
+	return Vector3(mat.m[2][2], mat.m[2][0], mat.m[2][1]);
+}
+
+bool Entity::SetModel(unsigned int modelIndex)
+{
+	_setEntityModel setEntityModel = (_setEntityModel)(Memory::GetBaseAddress() + 0x2B61E0);
+
+	return setEntityModel(this->ptr, modelIndex, this->GetModel());
 }
 
 std::vector<Entity> Entity::GetAll()
@@ -138,6 +144,33 @@ std::vector<Entity> Entity::GetAll()
 	return list;
 }
 
+Entity Entity::Spawn(unsigned int modelIndex, Vector3 coords)
+{
+	_spawnEntity spawnEntity = (_spawnEntity)(Memory::GetBaseAddress() + 0x25E550);
+	float coordsArray[3] = { coords.y, coords.z, coords.x };
+
+	GameEntity* res = spawnEntity(modelIndex, &coordsArray[0], 0, 0, 0, 1, 0, 0, 0, 1, 0, 0);
+
+	if (!res)
+	{
+		Logs::Add("Failed to create entity with model index %d (model not loaded ?)", modelIndex);
+		return 0;
+	}
+
+	Logs::Add("Spawned entity (address : %p) !", res);
+
+	Entity newEntity((uintptr_t)res);
+
+	return newEntity;
+}
+
+void Entity::Kill()
+{
+	_killEntity killEntity = (_killEntity)(Memory::GetBaseAddress() + 0x29DE40);
+
+	killEntity(this->ptr, 0, 0, 1, 1, 0, 0);
+}
+
 void Entity::RenderMenu()
 {
 	if (ImGui::CollapsingHeader("Entities"))
@@ -146,6 +179,16 @@ void Entity::RenderMenu()
 		int entitiesCount = entities.size();
 
 		ImGui::Text("Count: %i", entitiesCount);
+
+		if (ImGui::Button("Swap everyone to yourself"))
+		{
+			unsigned int myModelIndex = Game::GetLocalEntity().GetModel();
+
+			for (int i = 0; i < entitiesCount; i++)
+			{
+				entities[i].SetModel(myModelIndex);
+			}
+		}
 
 		for (int i = 0; i < entitiesCount; i++)
 		{
@@ -158,6 +201,12 @@ void Entity::RenderMenu()
 
 			if (ImGui::TreeNode(nodeText.str().c_str()))
 			{
+				ImGui::Text("Coords: %s", currentEntity.GetCoords().ToString().c_str());
+				ImGui::Text("Velocity: %s", currentEntity.GetVelocity().ToString().c_str());
+				ImGui::Text("Model index: %d", currentEntity.GetModel());
+				ImGui::Text("Char def address: %p", currentEntity.ptr->charDefFilePtr);
+				ImGui::Text("Unk flags: %llu", currentEntity.ptr->unkFlags);
+
 				ImGui::Text("Health: %i", currentEntity.GetHealth());
 
 				if (ImGui::Button("Heal"))
@@ -172,11 +221,22 @@ void Entity::RenderMenu()
 					currentEntity.SetMaxHealth(targetMaxHealth);
 				}
 
-				ImGui::Text("Coords: %s", currentEntity.GetCoords().ToString().c_str());
-				ImGui::Text("Velocity: %s", currentEntity.GetVelocity().ToString().c_str());
-				ImGui::Text("Model index: %d", currentEntity.GetModel());
-				ImGui::Text("Char def address: %x", currentEntity.ptr->charDefFilePtr);
-				ImGui::Text("Unk flags: %llu", currentEntity.ptr->unkFlags);
+				if (ImGui::Button("Teleport to"))
+				{
+					Game::GetLocalEntity().SetCoords(currentEntity.GetCoords());
+				}
+				
+				ImGui::SameLine();
+
+				if (ImGui::Button("Bring"))
+				{
+					currentEntity.SetCoords(Game::GetLocalEntity().GetCoords());
+				}
+
+				if (ImGui::Button("Kill"))
+				{
+					currentEntity.Kill();
+				}
 
 				ImGui::TreePop();
 			}

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "./Vector3.h"
+#include "./Matrix.h"
 #include "../vendor/imgui/imgui.h"
 
 #define ENTITY_MEM_SIZE 0x1E80
@@ -44,14 +45,22 @@ public:
 	float yVelocity; //0x1B68
 	float zVelocity; //0x1B6C
 	float xVelocity; //0x1B70
-	char pad_1B74[24]; //0x1B74
+	char pad_1B74[12]; //0x1B74
+	float yAxis6; //0x1B80
+	float zAxis6; //0x1B84
+	float xAxis6; //0x1B88
 	float yAxis2; //0x1B8C
 	float zAxis2; //0x1B90
 	float xAxis2; //0x1B94
-	char pad_1B98[16]; //0x1B98
+	float yAxis5; //0x1B98
+	float zAxis5; //0x1B9C
+	float xAxis5; //0x1BA0
+	char pad_1BA4[4]; //0x1BA4
 	float zRelated2; //0x1BA8
-	char pad_1BAC[724]; //0x1BAC
-}; //Size: 0x1E80
+	char pad_1BAC[12]; //0x1BAC
+	Matrix4x4 transformMatrix; //0x1BB8
+	char pad_1BF8[724]; //0x1BF8
+}; //Size: 0x1ECC
 
 class Entity
 {
@@ -60,6 +69,8 @@ private:
 
 public:
 	Entity(uintptr_t address);
+
+	static Entity Spawn(unsigned int modelIndex, Vector3 coords);
 
 	void SetCoords(Vector3 coords);
 	Vector3 GetCoords() const;
@@ -80,9 +91,17 @@ public:
 	uintptr_t GetAddress() const;
 
 	unsigned int GetModel() const;
+	bool SetModel(unsigned int modelIndex);
+
+	Vector3 GetForwardVector() const;
+
+	void Kill();
 
 	static std::vector<Entity> GetAll();
 	static void RenderMenu();
 };
 
-std::ostream& operator<<(std::ostream& os, const Entity& ent);
+typedef GameEntity* (__fastcall* _spawnEntity)(unsigned int modelIndex, float* coords, unsigned int unkInt, void* unkClass, void* unkClass2, int placeToGround, void* a7, void* unkClass3, char a9, int a10, void* unkClass4, char unkFlags);
+typedef char (__fastcall* _teleportEntity)(GameEntity* entity, float* coords);
+typedef bool (__fastcall* _setEntityModel)(GameEntity* entity, unsigned int modelId, unsigned int oldModelId);
+typedef bool(__fastcall* _killEntity)(GameEntity* entity, int a1, int a2, int a3, bool a4, bool a5, int a6);

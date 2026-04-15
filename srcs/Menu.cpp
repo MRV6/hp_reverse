@@ -3,6 +3,7 @@
 #include "../includes/Menu.h"
 #include "../includes/Entity.h"
 #include "../includes/Model.h"
+#include "../includes/Logs.h"
 
 bool Menu::isVisible = false;
 
@@ -20,6 +21,8 @@ void Menu::Render()
     {
         return;
     }
+
+    Logs::RenderMenu();
 
     ImGui::Begin("HP Reverse");
     

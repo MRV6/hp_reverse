@@ -12,6 +12,10 @@ public:
 	float z;
 
 	std::string ToString() const;
-};
 
-std::ostream& operator<<(std::ostream& os, const Vector3& vec);
+	Vector3 Normalize() const;
+
+	Vector3 operator+(Vector3 vec);
+	Vector3 operator-(Vector3 vec);
+	Vector3 operator*(Vector3 vec);
+};

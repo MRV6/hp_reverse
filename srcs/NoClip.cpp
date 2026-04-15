@@ -18,10 +18,12 @@ void NoClip::Init()
 
 void NoClip::Loop()
 {
+	/*
 	if (GetAsyncKeyState(VK_F4) & 0x1)
 	{
 		NoClip::Toggle();
 	}
+	*/
 
 	if (NoClip::active)
 	{
