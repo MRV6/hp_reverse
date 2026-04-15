@@ -1,9 +1,11 @@
 #include "../includes/Model.h"
 #include "../includes/Memory.h"
 
+#include <algorithm>
+
 uintptr_t Model::listAddress = 0;
 int Model::modelDataSize = 0x68;
-int Model::modelsCountOffset = 0x1417610;
+int Model::modelsCountOffset = 0x1417610; // Number of models (currently -> 635)
 
 Model::Model(uintptr_t address) : ptr(reinterpret_cast<GameModel*>(address)) {};
 
@@ -17,6 +19,11 @@ void Model::RenderMenu()
 	if (ImGui::CollapsingHeader("Models"))
 	{
 		std::vector<Model> models = Model::GetAll();
+		
+		std::sort(models.begin(), models.end(), [](const Model& a, const Model& b) {
+			return std::strcmp(a.ptr->name, b.ptr->name) < 0;
+		});
+
 		int modelsCount = models.size();
 
 		ImGui::Text("Count: %i", modelsCount);
@@ -31,6 +38,7 @@ void Model::RenderMenu()
 			{
 				ImGui::Text("Label: %s", currentModel.ptr->label);
 				ImGui::Text("Path: %s", currentModel.ptr->path);
+				ImGui::Text("Address: %p", currentModel.ptr);
 
 				ImGui::TreePop();
 			}
