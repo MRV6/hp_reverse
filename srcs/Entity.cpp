@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "../includes/Entity.h"
 #include "../includes/Memory.h"
 #include "../includes/Debug.h"
@@ -86,6 +88,21 @@ unsigned int Entity::GetModel() const
 	return this->ptr->modelIndex;
 }
 
+unsigned int Entity::GetMaxHealth() const
+{
+	return this->ptr->maxHealth;
+}
+
+void Entity::SetMaxHealth(unsigned int maxHealth)
+{
+	this->ptr->maxHealth = maxHealth;
+}
+
+void Entity::ResetHealth()
+{
+	this->SetHealth(this->GetMaxHealth());
+}
+
 std::ostream& operator<<(std::ostream& os, const Entity& ent)
 {
 	os << "[" << GREEN << std::hex << ent.GetAddress() << std::dec << RESET << "] ";
@@ -135,15 +152,31 @@ void Entity::RenderMenu()
 			ImGui::PushID(i);
 
 			Entity currentEntity = entities[i];
-			std::string modelName = currentEntity.GetModelName();
+			std::stringstream nodeText;
 
-			if (ImGui::TreeNode(modelName.c_str()))
+			nodeText << "[" << std::hex << currentEntity.GetAddress() << "] " << currentEntity.GetModelName();
+
+			if (ImGui::TreeNode(nodeText.str().c_str()))
 			{
-				ImGui::Text("Address: %x", currentEntity.GetAddress());
 				ImGui::Text("Health: %i", currentEntity.GetHealth());
+
+				if (ImGui::Button("Heal"))
+				{
+					currentEntity.ResetHealth();
+				}
+
+				int targetMaxHealth = currentEntity.GetMaxHealth();
+
+				if (ImGui::InputInt("Max health", &targetMaxHealth))
+				{
+					currentEntity.SetMaxHealth(targetMaxHealth);
+				}
+
 				ImGui::Text("Coords: %s", currentEntity.GetCoords().ToString().c_str());
 				ImGui::Text("Velocity: %s", currentEntity.GetVelocity().ToString().c_str());
 				ImGui::Text("Model index: %d", currentEntity.GetModel());
+				ImGui::Text("Char def address: %x", currentEntity.ptr->charDefFilePtr);
+				ImGui::Text("Unk flags: %llu", currentEntity.ptr->unkFlags);
 
 				ImGui::TreePop();
 			}
