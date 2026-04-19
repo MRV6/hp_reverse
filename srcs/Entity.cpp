@@ -6,6 +6,7 @@
 #include "../includes/Matrix.h"
 #include "../includes/Logs.h"
 #include "../includes/Main.h"
+#include "../includes/Offsets.h"
 
 Entity::Entity(uintptr_t address)
 {
@@ -36,7 +37,7 @@ void Entity::SetCoords(Vector3 coords)
 		return;
 	}
 
-	_teleportEntity teleportEntity = (_teleportEntity)(Memory::GetBaseAddress() + 0x33CC0);
+	_teleportEntity teleportEntity = (_teleportEntity)(Memory::GetBaseAddress() + Offsets::fnTeleportEntity);
 
 	float newCoords[3] = { coords.y, coords.z, coords.x };
 	teleportEntity(this->ptr, &newCoords[0]);
@@ -115,7 +116,7 @@ Vector3 Entity::GetForwardVector() const
 
 bool Entity::SetModel(unsigned int modelIndex)
 {
-	_setEntityModel setEntityModel = (_setEntityModel)(Memory::GetBaseAddress() + 0x2B61E0);
+	_setEntityModel setEntityModel = (_setEntityModel)(Memory::GetBaseAddress() + Offsets::fnSetEntityModel);
 
 	return setEntityModel(this->ptr, modelIndex, this->GetModel());
 }
@@ -124,7 +125,7 @@ std::vector<Entity> Entity::GetAll()
 {
 	std::vector<Entity> list;
 
-	uintptr_t entityListPtr = Memory::GetPointerAddress(0x01426D50, { 0x0 });
+	uintptr_t entityListPtr = Memory::GetPointerAddress(Offsets::entityList, { 0x0 });
 	uintptr_t entityListAddr = *(uintptr_t*)entityListPtr;
 
 	for (int i = 0; i < 256; i++)
@@ -147,7 +148,7 @@ std::vector<Entity> Entity::GetAll()
 
 Entity Entity::Spawn(unsigned int modelIndex, Vector3 coords)
 {
-	_spawnEntity spawnEntity = (_spawnEntity)(Memory::GetBaseAddress() + 0x25E550);
+	_spawnEntity spawnEntity = (_spawnEntity)(Memory::GetBaseAddress() + Offsets::fnSpawnEntity);
 	float coordsArray[3] = { coords.y, coords.z, coords.x };
 
 	GameEntity* res = spawnEntity(modelIndex, &coordsArray[0], 0, 0, 0, 1, 0, 0, 0, 1, 0, 0);
@@ -171,7 +172,7 @@ void Entity::Kill()
 
 	Main::RunInGameThread([entityPtr]()
 	{
-		_killEntity killEntity = (_killEntity)(Memory::GetBaseAddress() + 0x29DE40);
+		_killEntity killEntity = (_killEntity)(Memory::GetBaseAddress() + Offsets::fnKillEntity);
 
 		killEntity(entityPtr, 0, 0, 1, 1, 0, 0);
 	});

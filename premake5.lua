@@ -14,7 +14,7 @@ project "hp_reverse"
 
     includedirs { "includes" }
 
-    files { "srcs/*.cpp" }
+    files { "srcs/*.cpp", "includes/*.h" }
 
     include "vendor.lua"
 

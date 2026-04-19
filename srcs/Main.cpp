@@ -11,6 +11,7 @@
 #include "../includes/Model.h"
 #include "../includes/Logs.h"
 #include "../includes/Main.h"
+#include "../includes/Offsets.h"
 
 #include "../vendor/minhook/include/MinHook.h"
 
@@ -81,7 +82,7 @@ void Main::Init(HMODULE hModule)
     InitInterface();
     Main::InitModules();
 
-    if (MH_CreateHook(reinterpret_cast<void*>(Memory::GetBaseAddress() + 0x52BED0), &sub_52BED0_hook, reinterpret_cast<void**>(&orig_sub_52BED0)) != MH_OK)
+    if (MH_CreateHook(reinterpret_cast<void*>(Memory::GetBaseAddress() + Offsets::gameLoopHook), &sub_52BED0_hook, reinterpret_cast<void**>(&orig_sub_52BED0)) != MH_OK)
     {
         Shutdown(hModule);
         return;

@@ -33,7 +33,6 @@ class Model
 {
 private:
 	static uintptr_t listAddress;
-	static int modelsCountOffset;
 	static int modelDataSize;
 
 	GameModel* ptr;

@@ -5,6 +5,7 @@
 #include "../includes/Logs.h"
 #include "../includes/World.h"
 #include "../includes/Main.h"
+#include "../includes/Offsets.h"
 
 #include "../vendor/imgui/misc/cpp/imgui_stdlib.h"
 
@@ -14,7 +15,6 @@
 
 uintptr_t Model::listAddress = 0;
 int Model::modelDataSize = 0x68;
-int Model::modelsCountOffset = 0x1417610; // Number of models (currently -> 635)
 bool Model::showLoadedOnly = false;
 bool Model::sortListByIndex = false;
 
@@ -26,7 +26,7 @@ Model::Model(uintptr_t address) : ptr(reinterpret_cast<GameModel*>(address)) {};
 
 void Model::Init()
 {
-	Model::listAddress = Memory::GetPointerAddress(0x1417608, { 0x0 });
+	Model::listAddress = Memory::GetPointerAddress(Offsets::modelsList, { 0x0 });
 }
 
 char* Model::GetName() const
@@ -51,21 +51,21 @@ unsigned int Model::GetModelIndex() const
 
 bool Model::IsLoaded() const
 {
-	World* worldPtr = (World*)Memory::GetPointerAddress(0x141B3A0, { 0x0 });
+	World* worldPtr = (World*)Memory::GetPointerAddress(Offsets::world, { 0x0 });
 
 	if (!worldPtr)
 	{
 		return false;
 	}
 
-	uintptr_t levelPtrParent = Memory::GetPointerAddress(0x1420130, { 0x0 });
+	uintptr_t levelPtrParent = Memory::GetPointerAddress(Offsets::levelPtrParent, { 0x0 });
 
 	if (!levelPtrParent)
 	{
 		return false;
 	}
 
-	uintptr_t levelPtr = *(uintptr_t*)(levelPtrParent + 0x268);
+	uintptr_t levelPtr = *(uintptr_t*)(levelPtrParent + Offsets::levelOffset);
 
 	if (!levelPtr)
 	{
@@ -74,7 +74,7 @@ bool Model::IsLoaded() const
 
 	uintptr_t baseAddress = Memory::GetBaseAddress();
 
-	_getLoadedCharDefFile getLoadedCharDefFile = (_getLoadedCharDefFile)(baseAddress + 0x527F0);
+	_getLoadedCharDefFile getLoadedCharDefFile = (_getLoadedCharDefFile)(baseAddress + Offsets::fnGetLoadedCharDefFile);
 	uintptr_t charDefFile = getLoadedCharDefFile(worldPtr, levelPtr, this->GetModelIndex());
 
 	return charDefFile != 0;
@@ -86,21 +86,21 @@ void Model::Load() const
 	char* modelName = this->GetName();
 
 	Main::RunInGameThread([modelName, modelIndex]() {
-		uintptr_t levelPtrParent = Memory::GetPointerAddress(0x1420130, { 0x0 });
+		uintptr_t levelPtrParent = Memory::GetPointerAddress(Offsets::levelPtrParent, { 0x0 });
 
 		if (!levelPtrParent)
 		{
 			return;
 		}
 
-		uintptr_t levelPtr = *(uintptr_t*)(levelPtrParent + 0x268);
+		uintptr_t levelPtr = *(uintptr_t*)(levelPtrParent + Offsets::levelOffset);
 
 		if (!levelPtr)
 		{
 			return;
 		}
 
-		_loadModel loadModel = (_loadModel)(Memory::GetBaseAddress() + 0x2A8190);
+		_loadModel loadModel = (_loadModel)(Memory::GetBaseAddress() + Offsets::fnLoadModel);
 
 		if (!loadModel((uint16_t)modelIndex, levelPtr, 1, 0, 0))
 		{
@@ -276,7 +276,7 @@ std::vector<Model> Model::GetAll()
 	std::vector<Model> list;
 
 	uintptr_t modelsList = Model::listAddress;
-	int modelsCount = *(int*)(Memory::GetBaseAddress() + Model::modelsCountOffset);
+	int modelsCount = *(int*)(Memory::GetBaseAddress() + Offsets::modelsCountOffset);
 
 	for (int i = 0; i < modelsCount; i++)
 	{
