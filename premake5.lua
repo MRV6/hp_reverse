@@ -12,9 +12,11 @@ project "hp_reverse"
 
     cppdialect "C++17"
 
-    includedirs { "includes", "vendor/**" }
+    includedirs { "includes" }
 
-    files { "includes/**.h", "srcs/**.cpp", "vendor/**/**.h", "vendor/**/**.cpp", "vendor/**/**.c" }
+    files { "srcs/*.cpp" }
+
+    include "vendor.lua"
 
     links { "d3d12", "dxgi", "d3dcompiler" }
 
