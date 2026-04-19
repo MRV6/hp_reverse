@@ -25,6 +25,17 @@ void Menu::Render()
     Logs::RenderMenu();
 
     ImGui::Begin("HP Reverse");
+
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("Tools"))
+        {
+            ImGui::Checkbox("Logs", &Logs::visible);
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
+    }
     
     Entity::RenderMenu();
     Model::RenderMenu();

@@ -1,6 +1,7 @@
 #include "../includes/Logs.h"
 
 ImGuiTextBuffer Logs::logs = {};
+bool Logs::visible = false;
 
 void Logs::Add(const char* fmt, ...) IM_FMTARGS(2)
 {
@@ -14,6 +15,11 @@ void Logs::Add(const char* fmt, ...) IM_FMTARGS(2)
 
 void Logs::RenderMenu()
 {
+	if (!Logs::visible)
+	{
+		return;
+	}
+
 	ImGui::Begin("HP Reverse : logs");
 
 	ImGui::BeginChild("##logs", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Borders, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar);
