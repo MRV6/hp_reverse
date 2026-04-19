@@ -6,6 +6,8 @@
 #include "../includes/World.h"
 #include "../includes/Main.h"
 
+#include "../vendor/imgui/misc/cpp/imgui_stdlib.h"
+
 #include <algorithm>
 #include <sstream>
 #include <unordered_map>
@@ -15,6 +17,8 @@ int Model::modelDataSize = 0x68;
 int Model::modelsCountOffset = 0x1417610; // Number of models (currently -> 635)
 bool Model::showLoadedOnly = false;
 bool Model::sortListByIndex = false;
+
+static std::unordered_map<std::string, std::string> searchPerCategory = {};
 
 int lastLoadedModelsCount = 0;
 
@@ -197,11 +201,24 @@ void Model::RenderMenu()
 
 		for (const auto& [category, models] : sortedModelsByCategory)
 		{
-			if (ImGui::TreeNode(category.c_str()))
+			const char* categoryName = category.c_str();
+
+			if (ImGui::TreeNode(categoryName))
 			{
+				ImGui::PushID(categoryName);
+				ImGui::InputText("Search", &searchPerCategory[category]);
+				ImGui::PopID();
+
 				for (size_t i = 0; i < models.size(); i++)
 				{
 					Model currentModel = models[i];
+					std::string modelName = currentModel.GetName();
+
+					if (searchPerCategory[category] != "" && modelName.find(searchPerCategory[category]) == std::string::npos)
+					{
+						continue;
+					}
+
 					bool isLoaded = currentModel.IsLoaded();
 					unsigned int modelIndex = currentModel.GetModelIndex();
 

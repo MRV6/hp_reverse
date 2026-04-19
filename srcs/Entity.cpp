@@ -182,7 +182,7 @@ void Entity::RenderMenu()
 	if (ImGui::CollapsingHeader("Entities"))
 	{
 		std::vector<Entity> entities = Entity::GetAll();
-		int entitiesCount = entities.size();
+		size_t entitiesCount = entities.size();
 
 		ImGui::Text("Count: %i", entitiesCount);
 
@@ -190,15 +190,15 @@ void Entity::RenderMenu()
 		{
 			unsigned int myModelIndex = Game::GetLocalEntity().GetModel();
 
-			for (int i = 0; i < entitiesCount; i++)
+			for (size_t i = 0; i < entitiesCount; i++)
 			{
 				entities[i].SetModel(myModelIndex);
 			}
 		}
 
-		for (int i = 0; i < entitiesCount; i++)
+		for (size_t i = 0; i < entitiesCount; i++)
 		{
-			ImGui::PushID(i);
+			ImGui::PushID((int)i);
 
 			Entity currentEntity = entities[i];
 			std::stringstream nodeText;
