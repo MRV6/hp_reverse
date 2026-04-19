@@ -61,6 +61,13 @@ float __fastcall sub_52BED0_hook(float* a1, float* a2, float* a3)
     return orig_sub_52BED0(a1, a2, a3);
 };
 
+void Main::RunInGameThread(std::function<void()> fn)
+{
+    Main::funcQueueMutex.lock();
+    Main::funcQueue.push(fn);
+    Main::funcQueueMutex.unlock();
+}
+
 void Main::Init(HMODULE hModule)
 {
     if (MH_Initialize() != MH_OK)

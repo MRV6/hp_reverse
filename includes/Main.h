@@ -16,4 +16,5 @@ public:
 	static void Shutdown(HMODULE hModule);
 	static void InitModules();
 	static void LoopModules();
+	static void RunInGameThread(std::function<void()> fn);
 };

@@ -5,6 +5,7 @@
 #include "../includes/Game.h"
 #include "../includes/Matrix.h"
 #include "../includes/Logs.h"
+#include "../includes/Main.h"
 
 Entity::Entity(uintptr_t address)
 {
@@ -166,9 +167,14 @@ Entity Entity::Spawn(unsigned int modelIndex, Vector3 coords)
 
 void Entity::Kill()
 {
-	_killEntity killEntity = (_killEntity)(Memory::GetBaseAddress() + 0x29DE40);
+	GameEntity* entityPtr = this->ptr;
 
-	killEntity(this->ptr, 0, 0, 1, 1, 0, 0);
+	Main::RunInGameThread([entityPtr]()
+	{
+		_killEntity killEntity = (_killEntity)(Memory::GetBaseAddress() + 0x29DE40);
+
+		killEntity(entityPtr, 0, 0, 1, 1, 0, 0);
+	});
 }
 
 void Entity::RenderMenu()

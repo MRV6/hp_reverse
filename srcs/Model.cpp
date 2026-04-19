@@ -81,9 +81,7 @@ void Model::Load() const
 	unsigned int modelIndex = this->GetModelIndex();
 	char* modelName = this->GetName();
 
-	Main::funcQueueMutex.lock();
-
-	Main::funcQueue.push([modelName, modelIndex]() {
+	Main::RunInGameThread([modelName, modelIndex]() {
 		uintptr_t levelPtrParent = Memory::GetPointerAddress(0x1420130, { 0x0 });
 
 		if (!levelPtrParent)
@@ -108,8 +106,6 @@ void Model::Load() const
 
 		Logs::Add("Model %s loaded successfully !", modelName);
 	});
-
-	Main::funcQueueMutex.unlock();
 }
 
 std::string Model::GetType() const
