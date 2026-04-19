@@ -101,7 +101,7 @@ public:
 	static void RenderMenu();
 };
 
-typedef GameEntity* (__fastcall* _spawnEntity)(unsigned int modelIndex, float* coords, unsigned int unkInt, void* unkClass, void* unkClass2, int placeToGround, void* a7, void* unkClass3, char a9, int a10, void* unkClass4, char unkFlags);
+typedef GameEntity* (__fastcall* _spawnEntity)(unsigned int modelIndex, float* coords, unsigned int unkInt, void* unkClass, void* unkClass2, bool placeToGround, void* a7, void* unkClass3, char a9, int a10, void* unkClass4, char unkFlags);
 typedef char (__fastcall* _teleportEntity)(GameEntity* entity, float* coords);
 typedef bool (__fastcall* _setEntityModel)(GameEntity* entity, unsigned int modelId, unsigned int oldModelId);
 typedef bool(__fastcall* _killEntity)(GameEntity* entity, int a1, int a2, int a3, bool a4, bool a5, int a6);
