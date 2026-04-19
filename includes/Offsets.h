@@ -14,7 +14,7 @@ struct Offsets
 
 	// Values
 	static constexpr uintptr_t entityList = 0x01426D50;
-	static constexpr uintptr_t localEntity = 0x01426D50; // TODO: Use the real local entity and not the first entity (which is ours if we don't switch)
+	static constexpr uintptr_t localEntity = 0x1419800;
 	static constexpr uintptr_t levelPtrParent = 0x1420130;
 	static constexpr uintptr_t levelOffset = 0x268;
 	static constexpr uintptr_t world = 0x141B3A0;
