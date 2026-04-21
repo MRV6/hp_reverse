@@ -22,11 +22,17 @@ void Logs::RenderMenu()
 
 	ImGui::Begin("HP Reverse : logs");
 
-	ImGui::BeginChild("##logs", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Borders, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar);
+	if (ImGui::BeginChild("##logs", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Borders, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar))
+	{
+		ImGui::TextUnformatted(Logs::logs.begin());
 
-	ImGui::TextUnformatted(Logs::logs.begin());
+		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+		{
+			ImGui::SetScrollHereY(1.0f);
+		}
 
-	ImGui::EndChild();
+		ImGui::EndChild();
+	}
 
 	ImGui::End();
 }
