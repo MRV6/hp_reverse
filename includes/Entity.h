@@ -59,7 +59,9 @@ public:
 	float zRelated2; //0x1BA8
 	char pad_1BAC[12]; //0x1BAC
 	Matrix4x4 transformMatrix; //0x1BB8
-	char pad_1BF8[724]; //0x1BF8
+	char pad_1BF8[284]; //0x1BF8
+	uint16_t zRot; //0x1D14
+	char pad_1D16[438]; //0x1D16
 }; //Size: 0x1ECC
 
 class Entity
@@ -101,7 +103,7 @@ public:
 	static void RenderMenu();
 };
 
-typedef GameEntity* (__fastcall* _spawnEntity)(unsigned int modelIndex, float* coords, unsigned int unkInt, void* unkClass, void* unkClass2, bool placeToGround, void* a7, void* unkClass3, char a9, int a10, void* unkClass4, char unkFlags);
+typedef GameEntity* (__fastcall* _spawnEntity)(unsigned int modelIndex, float* coords, unsigned int heading, void* unkClass, void* unkClass2, bool placeToGround, void* a7, void* unkClass3, char a9, int a10, void* unkClass4, char unkFlags);
 typedef char (__fastcall* _teleportEntity)(GameEntity* entity, float* coords);
 typedef bool (__fastcall* _setEntityModel)(GameEntity* entity, unsigned int modelId, unsigned int oldModelId);
 typedef bool(__fastcall* _killEntity)(GameEntity* entity, int a1, int a2, int a3, bool a4, bool a5, int a6);

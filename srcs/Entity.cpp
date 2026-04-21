@@ -151,7 +151,8 @@ Entity Entity::Spawn(unsigned int modelIndex, Vector3 coords)
 	_spawnEntity spawnEntity = (_spawnEntity)(Memory::GetBaseAddress() + Offsets::fnSpawnEntity);
 	float coordsArray[3] = { coords.y, coords.z, coords.x };
 
-	GameEntity* res = spawnEntity(modelIndex, &coordsArray[0], 0, 0, 0, 1, 0, 0, 0, 1, 0, 0xFF);
+	uint16_t invertedRot = LOWORD(Game::GetLocalEntity().ptr->zRot) + 0x8000; // Add 180 degrees to local player rotation
+	GameEntity* res = spawnEntity(modelIndex, &coordsArray[0], invertedRot, 0, 0, 1, 0, 0, 0, 1, 0, 0xFF);
 
 	if (!res)
 	{
