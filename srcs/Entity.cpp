@@ -151,7 +151,7 @@ Entity Entity::Spawn(unsigned int modelIndex, Vector3 coords)
 	_spawnEntity spawnEntity = (_spawnEntity)(Memory::GetBaseAddress() + Offsets::fnSpawnEntity);
 	float coordsArray[3] = { coords.y, coords.z, coords.x };
 
-	GameEntity* res = spawnEntity(modelIndex, &coordsArray[0], 0, 0, 0, 1, 0, 0, 0, 1, 0, 0);
+	GameEntity* res = spawnEntity(modelIndex, &coordsArray[0], 0, 0, 0, 1, 0, 0, 0, 1, 0, 0xFF);
 
 	if (!res)
 	{
