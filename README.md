@@ -2,8 +2,8 @@
 
 Reverse engineering project about Lego Harry Potter Collection.
 
-## Preview
-<img width="600" height="336" alt="hp_reverse_demo_2" src="https://github.com/user-attachments/assets/a68ee75d-46b4-4ffa-a1bc-0995e6b60c4b" />
+## Preview video
+[![](https://github.com/user-attachments/assets/e60b067b-2758-4a84-b68e-7d72016c4a7b)](https://www.youtube.com/watch?v=HK-Q97VwWIw)
 
 ## Current features
 
