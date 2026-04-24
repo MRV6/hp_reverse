@@ -5,7 +5,9 @@ includedirs {
 
     "vendor/imgui",
     "vendor/imgui/backends",
-    "vendor/imgui/misc/cpp"
+    "vendor/imgui/misc/cpp",
+
+    "vendor/patterns"
 }
 
 files {
@@ -16,5 +18,7 @@ files {
 
     "vendor/kiero/kiero.cpp",
 
-    "vendor/minhook/**"
+    "vendor/minhook/**",
+
+    "vendor/patterns/Hooking.Patterns.cpp"
 }

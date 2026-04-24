@@ -37,10 +37,8 @@ void Entity::SetCoords(Vector3 coords)
 		return;
 	}
 
-	_teleportEntity teleportEntity = (_teleportEntity)(Memory::GetBaseAddress() + Offsets::fnTeleportEntity);
-
 	float newCoords[3] = { coords.y, coords.z, coords.x };
-	teleportEntity(this->ptr, &newCoords[0]);
+	Game::TeleportEntity(this->ptr, &newCoords[0]);
 }
 
 Vector3 Entity::GetVelocity() const
@@ -116,9 +114,7 @@ Vector3 Entity::GetForwardVector() const
 
 bool Entity::SetModel(unsigned int modelIndex)
 {
-	_setEntityModel setEntityModel = (_setEntityModel)(Memory::GetBaseAddress() + Offsets::fnSetEntityModel);
-
-	return setEntityModel(this->ptr, modelIndex, this->GetModel());
+	return Game::SetEntityModel(this->ptr, modelIndex, this->GetModel());
 }
 
 std::vector<Entity> Entity::GetAll()
@@ -146,13 +142,20 @@ std::vector<Entity> Entity::GetAll()
 	return list;
 }
 
+Entity& Entity::GetLocalEntity()
+{
+	uintptr_t localEntityPtr = Memory::GetBaseAddress() + Offsets::localEntity;
+	Entity localEntity = Entity(*(uintptr_t*)localEntityPtr);
+
+	return localEntity;
+}
+
 Entity Entity::Spawn(unsigned int modelIndex, Vector3 coords)
 {
-	_spawnEntity spawnEntity = (_spawnEntity)(Memory::GetBaseAddress() + Offsets::fnSpawnEntity);
 	float coordsArray[3] = { coords.y, coords.z, coords.x };
 
-	uint16_t invertedRot = LOWORD(Game::GetLocalEntity().ptr->zRot) + 0x8000; // Add 180 degrees to local player rotation
-	GameEntity* res = spawnEntity(modelIndex, &coordsArray[0], invertedRot, 0, 0, 1, 0, 0, 0, 1, 0, 0xFF);
+	uint16_t invertedRot = LOWORD(Entity::GetLocalEntity().ptr->zRot) + 0x8000; // Add 180 degrees to local player rotation
+	GameEntity* res = Game::SpawnEntity(modelIndex, &coordsArray[0], invertedRot, 0, 0, 1, 0, 0, 0, 1, 0, 0xFF);
 
 	if (!res)
 	{
@@ -173,9 +176,7 @@ void Entity::Kill()
 
 	Main::RunInGameThread([entityPtr]()
 	{
-		_killEntity killEntity = (_killEntity)(Memory::GetBaseAddress() + Offsets::fnKillEntity);
-
-		killEntity(entityPtr, 0, 0, 1, 1, 0, 0);
+		Game::KillEntity(entityPtr, 0, 0, 1, 1, 0, 0);
 	});
 }
 
@@ -190,7 +191,7 @@ void Entity::RenderMenu()
 
 		if (ImGui::Button("Swap everyone to yourself"))
 		{
-			unsigned int myModelIndex = Game::GetLocalEntity().GetModel();
+			unsigned int myModelIndex = Entity::GetLocalEntity().GetModel();
 
 			for (size_t i = 0; i < entitiesCount; i++)
 			{
@@ -231,14 +232,14 @@ void Entity::RenderMenu()
 
 				if (ImGui::Button("Teleport to"))
 				{
-					Game::GetLocalEntity().SetCoords(currentEntity.GetCoords());
+					Entity::GetLocalEntity().SetCoords(currentEntity.GetCoords());
 				}
 				
 				ImGui::SameLine();
 
 				if (ImGui::Button("Bring"))
 				{
-					currentEntity.SetCoords(Game::GetLocalEntity().GetCoords());
+					currentEntity.SetCoords(Entity::GetLocalEntity().GetCoords());
 				}
 
 				if (ImGui::Button("Kill"))

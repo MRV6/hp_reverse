@@ -12,6 +12,7 @@
 #include "../includes/Logs.h"
 #include "../includes/Main.h"
 #include "../includes/Offsets.h"
+#include "../includes/Game.h"
 
 #include "../vendor/minhook/include/MinHook.h"
 
@@ -26,6 +27,7 @@ void Main::InitModules()
     Studs::Init();
     NoClip::Init();
     Model::Init();
+    Game::Init();
 }
 
 void Main::LoopModules()

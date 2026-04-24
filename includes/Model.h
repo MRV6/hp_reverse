@@ -56,6 +56,3 @@ public:
 
 	std::string GetType() const;
 };
-
-typedef uintptr_t (__fastcall* _getLoadedCharDefFile)(World* world, uintptr_t level, unsigned int modelIndex);
-typedef bool(__fastcall* _loadModel)(unsigned int modelIndex, uintptr_t level, bool a3, bool a4, uintptr_t* unk);

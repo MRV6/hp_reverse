@@ -24,11 +24,6 @@ int lastLoadedModelsCount = 0;
 
 Model::Model(uintptr_t address) : ptr(reinterpret_cast<GameModel*>(address)) {};
 
-void Model::Init()
-{
-	Model::listAddress = Memory::GetPointerAddress(Offsets::modelsList, { 0x0 });
-}
-
 char* Model::GetName() const
 {
 	return this->ptr->name;
@@ -74,8 +69,7 @@ bool Model::IsLoaded() const
 
 	uintptr_t baseAddress = Memory::GetBaseAddress();
 
-	_getLoadedCharDefFile getLoadedCharDefFile = (_getLoadedCharDefFile)(baseAddress + Offsets::fnGetLoadedCharDefFile);
-	uintptr_t charDefFile = getLoadedCharDefFile(worldPtr, levelPtr, this->GetModelIndex());
+	uintptr_t charDefFile = Game::GetLoadedCharFile(worldPtr, levelPtr, this->GetModelIndex());
 
 	return charDefFile != 0;
 }
@@ -100,9 +94,7 @@ void Model::Load() const
 			return;
 		}
 
-		_loadModel loadModel = (_loadModel)(Memory::GetBaseAddress() + Offsets::fnLoadModel);
-
-		if (!loadModel((uint16_t)modelIndex, levelPtr, 1, 0, 0))
+		if (!Game::LoadModel((uint16_t)modelIndex, levelPtr, 1, 0, 0))
 		{
 			Logs::Add("Failed to load model %s !", modelName);
 			return;
@@ -139,7 +131,7 @@ static std::string GetModelHeaderText(Model model, bool isLoaded)
 
 static void SpawnForwardEntity(unsigned int modelIndex)
 {
-	Entity localEntity = Game::GetLocalEntity();
+	Entity localEntity = Entity::GetLocalEntity();
 	Vector3 localEntityCoords = localEntity.GetCoords();
 	Vector3 spawnCoords = localEntityCoords - localEntity.GetForwardVector();
 
@@ -172,6 +164,11 @@ static auto GetSortedModels(size_t modelsCount, std::vector<Model> models, int* 
 	}
 
 	return sortedModelsByCategory;
+}
+
+void Model::Init()
+{
+	Model::listAddress = Memory::GetPointerAddress(Offsets::modelsList, { 0x0 });
 }
 
 void Model::RenderMenu()
@@ -246,7 +243,7 @@ void Model::RenderMenu()
 
 							if (ImGui::Button("Swap to"))
 							{
-								if (Game::GetLocalEntity().SetModel(modelIndex))
+								if (Entity::GetLocalEntity().SetModel(modelIndex))
 								{
 									Logs::Add("Swapped to %s model !", currentModel.GetName());
 								}

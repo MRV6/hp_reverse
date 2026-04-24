@@ -27,7 +27,7 @@ void NoClip::Loop()
 
 	if (NoClip::active)
 	{
-		Entity localEntity = Game::GetLocalEntity();
+		Entity localEntity = Entity::GetLocalEntity();
 		Vector3 velocity(0.0f, 0.0f, 0.0f);
 
 		// Left/right
