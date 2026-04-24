@@ -19,6 +19,7 @@ struct Offsets
 
 	static constexpr uintptr_t studs = 0x01419430;
 
-	static constexpr uintptr_t gameLoopHook = 0x52BED0;
+	static constexpr uintptr_t currentLevelOffset = 0x1420130;
 
+	static constexpr uintptr_t gameLoopHook = 0x52BED0;
 };

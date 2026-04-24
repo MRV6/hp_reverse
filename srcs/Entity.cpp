@@ -10,6 +10,7 @@
 
 std::unordered_map<GameEntity*, bool> followingEntities = {};
 std::mutex followingEntitiesMutex;
+bool Entity::menuVisible = false;
 
 Entity::Entity(uintptr_t address)
 {
@@ -204,78 +205,84 @@ void Entity::Loop()
 
 void Entity::RenderMenu()
 {
-	if (ImGui::CollapsingHeader("Entities"))
+	if (!Entity::menuVisible)
 	{
-		std::vector<Entity> entities = Entity::GetAll();
-		size_t entitiesCount = entities.size();
+		return;
+	}
 
-		ImGui::Text("Count: %i", entitiesCount);
+	ImGui::Begin("Entities");
 
-		if (ImGui::Button("Swap everyone to yourself"))
-		{
-			unsigned int myModelIndex = Entity::GetLocalEntity().GetModel();
+	std::vector<Entity> entities = Entity::GetAll();
+	size_t entitiesCount = entities.size();
 
-			for (size_t i = 0; i < entitiesCount; i++)
-			{
-				entities[i].SetModel(myModelIndex);
-			}
-		}
+	ImGui::Text("Count: %i", entitiesCount);
+
+	if (ImGui::Button("Swap everyone to yourself"))
+	{
+		unsigned int myModelIndex = Entity::GetLocalEntity().GetModel();
 
 		for (size_t i = 0; i < entitiesCount; i++)
 		{
-			ImGui::PushID((int)i);
-
-			Entity currentEntity = entities[i];
-			std::stringstream nodeText;
-
-			nodeText << "[" << std::hex << currentEntity.GetAddress() << "] " << currentEntity.GetModelName();
-
-			if (ImGui::TreeNode(nodeText.str().c_str()))
-			{
-				ImGui::Text("Coords: %s", currentEntity.GetCoords().ToString().c_str());
-				ImGui::Text("Velocity: %s", currentEntity.GetVelocity().ToString().c_str());
-				ImGui::Text("Model index: %d", currentEntity.GetModel());
-				ImGui::Text("Char def address: %p", currentEntity.ptr->charDefFilePtr);
-				ImGui::Text("Unk flags: %llu", currentEntity.ptr->unkFlags);
-
-				ImGui::Text("Health: %i", currentEntity.GetHealth());
-
-				std::lock_guard<std::mutex> lock(followingEntitiesMutex);
-				ImGui::Checkbox("Follow player", &followingEntities[currentEntity.ptr]);
-
-				if (ImGui::Button("Heal"))
-				{
-					currentEntity.ResetHealth();
-				}
-
-				int targetMaxHealth = currentEntity.GetMaxHealth();
-
-				if (ImGui::InputInt("Max health", &targetMaxHealth))
-				{
-					currentEntity.SetMaxHealth(targetMaxHealth);
-				}
-
-				if (ImGui::Button("Teleport to"))
-				{
-					Entity::GetLocalEntity().SetCoords(currentEntity.GetCoords());
-				}
-				
-				ImGui::SameLine();
-
-				if (ImGui::Button("Bring"))
-				{
-					currentEntity.SetCoords(Entity::GetLocalEntity().GetCoords());
-				}
-
-				if (ImGui::Button("Kill"))
-				{
-					currentEntity.Kill();
-				}
-
-				ImGui::TreePop();
-			}
-
-			ImGui::PopID();
+			entities[i].SetModel(myModelIndex);
 		}
 	}
+
+	for (size_t i = 0; i < entitiesCount; i++)
+	{
+		ImGui::PushID((int)i);
+
+		Entity currentEntity = entities[i];
+		std::stringstream nodeText;
+
+		nodeText << "[" << std::hex << currentEntity.GetAddress() << "] " << currentEntity.GetModelName();
+
+		if (ImGui::TreeNode(nodeText.str().c_str()))
+		{
+			ImGui::Text("Coords: %s", currentEntity.GetCoords().ToString().c_str());
+			ImGui::Text("Velocity: %s", currentEntity.GetVelocity().ToString().c_str());
+			ImGui::Text("Model index: %d", currentEntity.GetModel());
+			ImGui::Text("Char def address: %p", currentEntity.ptr->charDefFilePtr);
+			ImGui::Text("Unk flags: %llu", currentEntity.ptr->unkFlags);
+
+			ImGui::Text("Health: %i", currentEntity.GetHealth());
+
+			std::lock_guard<std::mutex> lock(followingEntitiesMutex);
+			ImGui::Checkbox("Follow player", &followingEntities[currentEntity.ptr]);
+
+			if (ImGui::Button("Heal"))
+			{
+				currentEntity.ResetHealth();
+			}
+
+			int targetMaxHealth = currentEntity.GetMaxHealth();
+
+			if (ImGui::InputInt("Max health", &targetMaxHealth))
+			{
+				currentEntity.SetMaxHealth(targetMaxHealth);
+			}
+
+			if (ImGui::Button("Teleport to"))
+			{
+				Entity::GetLocalEntity().SetCoords(currentEntity.GetCoords());
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Bring"))
+			{
+				currentEntity.SetCoords(Entity::GetLocalEntity().GetCoords());
+			}
+
+			if (ImGui::Button("Kill"))
+			{
+				currentEntity.Kill();
+			}
+
+			ImGui::TreePop();
+		}
+
+		ImGui::PopID();
+	}
+
+	ImGui::End();
 }

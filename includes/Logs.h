@@ -11,7 +11,7 @@ private:
 	static ImGuiTextBuffer logs;
 
 public:
-	static bool visible;
+	static bool menuVisible;
 
 	static void RenderMenu();
 	static void Add(const char* fmt, ...) IM_FMTARGS(2);

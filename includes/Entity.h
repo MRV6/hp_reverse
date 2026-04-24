@@ -104,6 +104,7 @@ public:
 	static std::vector<Entity> GetAll();
 	static Entity GetLocalEntity();
 
+	static bool menuVisible;
 	static void RenderMenu();
 	static void Loop();
 };

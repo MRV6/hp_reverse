@@ -40,6 +40,7 @@ private:
 public:
 	Model(uintptr_t address);
 
+	static bool menuVisible;
 	static void Init();
 	static void RenderMenu();
 	static std::vector<Model> GetAll();

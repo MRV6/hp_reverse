@@ -18,6 +18,8 @@ int Model::modelDataSize = 0x68;
 bool Model::showLoadedOnly = false;
 bool Model::sortListByIndex = false;
 
+bool Model::menuVisible = false;
+
 static std::unordered_map<std::string, std::string> searchPerCategory = {};
 
 int lastLoadedModelsCount = 0;
@@ -173,99 +175,105 @@ void Model::Init()
 
 void Model::RenderMenu()
 {
-	if (ImGui::CollapsingHeader("Models"))
+	if (!Model::menuVisible)
 	{
-		std::vector<Model> models = Model::GetAll();
-		
-		std::sort(models.begin(), models.end(), [](const Model& a, const Model& b) {
-			if (Model::sortListByIndex)
-			{
-				return a.GetModelIndex() < b.GetModelIndex();
-			}
+		return;
+	}
 
-			return std::strcmp(a.GetName(), b.GetName()) < 0;
-		});
+	ImGui::Begin("Models");
 
-		size_t modelsCount = models.size();
-		int currentLoadedModelsCount = 0;
-		std::unordered_map<std::string, std::vector<Model>> sortedModelsByCategory = GetSortedModels(modelsCount, models, &currentLoadedModelsCount);
+	std::vector<Model> models = Model::GetAll();
 
-		ImGui::Checkbox("Show only loaded models", &Model::showLoadedOnly);
-		ImGui::SameLine();
-		ImGui::Checkbox("Sort by index", &Model::sortListByIndex);
-
-		ImGui::Text("Total: %i (loaded: %i)", modelsCount, lastLoadedModelsCount);
-
-		for (const auto& [category, models] : sortedModelsByCategory)
+	std::sort(models.begin(), models.end(), [](const Model& a, const Model& b) {
+		if (Model::sortListByIndex)
 		{
-			const char* categoryName = category.c_str();
-
-			if (ImGui::TreeNode(categoryName))
-			{
-				ImGui::PushID(categoryName);
-				ImGui::InputText("Search", &searchPerCategory[category]);
-				ImGui::PopID();
-
-				for (size_t i = 0; i < models.size(); i++)
-				{
-					Model currentModel = models[i];
-					std::string modelName = currentModel.GetName();
-
-					if (searchPerCategory[category] != "" && modelName.find(searchPerCategory[category]) == std::string::npos)
-					{
-						continue;
-					}
-
-					bool isLoaded = currentModel.IsLoaded();
-					unsigned int modelIndex = currentModel.GetModelIndex();
-
-					ImGui::PushID(modelIndex);
-
-					if (ImGui::TreeNodeEx(GetModelHeaderText(currentModel, isLoaded).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-					{
-						ImGui::Text("Label: %s", currentModel.GetLabel());
-						ImGui::Text("Path: %s", currentModel.GetPath());
-						ImGui::Text("Address: %p", currentModel.ptr);
-
-						if (!isLoaded)
-						{
-							if (ImGui::Button("Load"))
-							{
-								currentModel.Load();
-							}
-						}
-						else
-						{
-							if (ImGui::Button("Spawn"))
-							{
-								SpawnForwardEntity(modelIndex);
-							}
-
-							if (ImGui::Button("Swap to"))
-							{
-								if (Entity::GetLocalEntity().SetModel(modelIndex))
-								{
-									Logs::Add("Swapped to %s model !", currentModel.GetName());
-								}
-								else
-								{
-									Logs::Add("Could not swap to %s model", currentModel.GetName());
-								}
-							}
-						}
-
-						ImGui::TreePop();
-					}
-
-					ImGui::PopID();
-				}
-
-				ImGui::TreePop();
-			}
+			return a.GetModelIndex() < b.GetModelIndex();
 		}
 
-		lastLoadedModelsCount = currentLoadedModelsCount;
+		return std::strcmp(a.GetName(), b.GetName()) < 0;
+	});
+
+	size_t modelsCount = models.size();
+	int currentLoadedModelsCount = 0;
+	std::unordered_map<std::string, std::vector<Model>> sortedModelsByCategory = GetSortedModels(modelsCount, models, &currentLoadedModelsCount);
+
+	ImGui::Checkbox("Show only loaded models", &Model::showLoadedOnly);
+	ImGui::SameLine();
+	ImGui::Checkbox("Sort by index", &Model::sortListByIndex);
+
+	ImGui::Text("Total: %i (loaded: %i)", modelsCount, lastLoadedModelsCount);
+
+	for (const auto& [category, models] : sortedModelsByCategory)
+	{
+		const char* categoryName = category.c_str();
+
+		if (ImGui::TreeNode(categoryName))
+		{
+			ImGui::PushID(categoryName);
+			ImGui::InputText("Search", &searchPerCategory[category]);
+			ImGui::PopID();
+
+			for (size_t i = 0; i < models.size(); i++)
+			{
+				Model currentModel = models[i];
+				std::string modelName = currentModel.GetName();
+
+				if (searchPerCategory[category] != "" && modelName.find(searchPerCategory[category]) == std::string::npos)
+				{
+					continue;
+				}
+
+				bool isLoaded = currentModel.IsLoaded();
+				unsigned int modelIndex = currentModel.GetModelIndex();
+
+				ImGui::PushID(modelIndex);
+
+				if (ImGui::TreeNodeEx(GetModelHeaderText(currentModel, isLoaded).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text("Label: %s", currentModel.GetLabel());
+					ImGui::Text("Path: %s", currentModel.GetPath());
+					ImGui::Text("Address: %p", currentModel.ptr);
+
+					if (!isLoaded)
+					{
+						if (ImGui::Button("Load"))
+						{
+							currentModel.Load();
+						}
+					}
+					else
+					{
+						if (ImGui::Button("Spawn"))
+						{
+							SpawnForwardEntity(modelIndex);
+						}
+
+						if (ImGui::Button("Swap to"))
+						{
+							if (Entity::GetLocalEntity().SetModel(modelIndex))
+							{
+								Logs::Add("Swapped to %s model !", currentModel.GetName());
+							}
+							else
+							{
+								Logs::Add("Could not swap to %s model", currentModel.GetName());
+							}
+						}
+					}
+
+					ImGui::TreePop();
+				}
+
+				ImGui::PopID();
+			}
+
+			ImGui::TreePop();
+		}
 	}
+
+	lastLoadedModelsCount = currentLoadedModelsCount;
+	
+	ImGui::End();
 }
 
 std::vector<Model> Model::GetAll()

@@ -1,7 +1,7 @@
 #include "../includes/Logs.h"
 
 ImGuiTextBuffer Logs::logs = {};
-bool Logs::visible = false;
+bool Logs::menuVisible = false;
 
 void Logs::Add(const char* fmt, ...) IM_FMTARGS(2)
 {
@@ -15,7 +15,7 @@ void Logs::Add(const char* fmt, ...) IM_FMTARGS(2)
 
 void Logs::RenderMenu()
 {
-	if (!Logs::visible)
+	if (!Logs::menuVisible)
 	{
 		return;
 	}
