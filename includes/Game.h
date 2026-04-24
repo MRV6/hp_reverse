@@ -11,6 +11,7 @@ namespace GameFn
 	typedef bool(__fastcall* KillEntity)(GameEntity* entity, int a1, int a2, int a3, bool a4, bool a5, int a6);
 	typedef uintptr_t(__fastcall* GetLoadedCharFile)(World* world, uintptr_t level, unsigned int modelIndex);
 	typedef bool(__fastcall* LoadModel)(unsigned int modelIndex, uintptr_t level, bool a3, bool a4, uintptr_t* unk);
+	typedef uintptr_t(__fastcall* FollowPlayer)(uintptr_t unused, uintptr_t playerUnkClass1, uintptr_t playerUnkClass2, uintptr_t a4, int a5, bool unkBool);
 };
 
 class Game
@@ -24,4 +25,5 @@ public:
 	static GameFn::KillEntity KillEntity;
 	static GameFn::GetLoadedCharFile GetLoadedCharFile;
 	static GameFn::LoadModel LoadModel;
+	static GameFn::FollowPlayer FollowPlayer;
 };

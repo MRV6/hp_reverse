@@ -8,6 +8,9 @@
 #include "../includes/Main.h"
 #include "../includes/Offsets.h"
 
+std::unordered_map<GameEntity*, bool> followingEntities = {};
+std::mutex followingEntitiesMutex;
+
 Entity::Entity(uintptr_t address)
 {
 	this->ptr = 0;
@@ -142,7 +145,7 @@ std::vector<Entity> Entity::GetAll()
 	return list;
 }
 
-Entity& Entity::GetLocalEntity()
+Entity Entity::GetLocalEntity()
 {
 	uintptr_t localEntityPtr = Memory::GetBaseAddress() + Offsets::localEntity;
 	Entity localEntity = Entity(*(uintptr_t*)localEntityPtr);
@@ -178,6 +181,25 @@ void Entity::Kill()
 	{
 		Game::KillEntity(entityPtr, 0, 0, 1, 1, 0, 0);
 	});
+}
+
+void Entity::Loop()
+{
+	std::lock_guard<std::mutex> lock(followingEntitiesMutex);
+
+	for (const auto& [entity, isFollowing] : followingEntities)
+	{
+		if (!isFollowing)
+		{
+			continue;
+		}
+
+		uintptr_t unkClass = (uintptr_t)entity->unkClass;
+
+		Main::RunInGameThread([unkClass]() {
+			Game::FollowPlayer(0, unkClass, unkClass, 0, 1, false);
+		});
+	}
 }
 
 void Entity::RenderMenu()
@@ -217,6 +239,9 @@ void Entity::RenderMenu()
 				ImGui::Text("Unk flags: %llu", currentEntity.ptr->unkFlags);
 
 				ImGui::Text("Health: %i", currentEntity.GetHealth());
+
+				std::lock_guard<std::mutex> lock(followingEntitiesMutex);
+				ImGui::Checkbox("Follow player", &followingEntities[currentEntity.ptr]);
 
 				if (ImGui::Button("Heal"))
 				{

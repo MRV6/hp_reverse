@@ -34,6 +34,7 @@ void Main::LoopModules()
 {
     NoClip::Loop();
     Menu::Loop();
+    Entity::Loop();
 }
 
 void Main::Shutdown(HMODULE hModule)
@@ -53,7 +54,7 @@ float __fastcall sub_52BED0_hook(float* a1, float* a2, float* a3)
 {
     Main::funcQueueMutex.lock();
 
-    if (!Main::funcQueue.empty())
+    while (!Main::funcQueue.empty())
     {
         Main::funcQueue.front()();
         Main::funcQueue.pop();

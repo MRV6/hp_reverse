@@ -14,7 +14,9 @@ class GameEntity
 public:
 	void* brain; //0x0000
 	uint64_t unkFlags; //0x0008
-	char pad_0010[40]; //0x0010
+	char pad_0010[8]; //0x0010
+	void* unkClass; //0x0018
+	char pad_0020[24]; //0x0020
 	void* modelNamePtr; //0x0038
 	char pad_0040[4]; //0x0040
 	float yAxis; //0x0044
@@ -100,6 +102,8 @@ public:
 	void Kill();
 
 	static std::vector<Entity> GetAll();
-	static Entity& GetLocalEntity();
+	static Entity GetLocalEntity();
+
 	static void RenderMenu();
+	static void Loop();
 };
